@@ -2,18 +2,18 @@ class Train
   attr_accessor :speed
   attr_reader :wagons, :route, :type
 
-  def initialize (number,type,wagons)
+  def initialize(number,type,wagons)
   @number = number
   @type = type
   @wagons = wagons
   @speed = 0
   end
 
-  def increase_speed (s)
+  def increase_speed(s)
   @speed += s
   end
 
-  def decrease_speed (s)
+  def decrease_speed(s)
     if @speed - s > 0
       @speed -= s
     else
@@ -56,13 +56,13 @@ class Train
   end
 
   def next_station
-    unless  @route.stations[@index_station] == @route.stations.last
+    unless @index_station + 1 == @route.stations.count
       @route.stations[@index_station + 1]
     end
   end
 
   def previous_station
-    unless @route.stations[@index_station] == @route.stations.first
+    unless @index_station == 0
       @route.stations[@index_station - 1]
     end
   end

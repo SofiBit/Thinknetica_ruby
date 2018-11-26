@@ -14,12 +14,12 @@ train_two = Train.new (2),('freight'),(18)
 
 #test station
 
-minsk.accept (train_one)
-minsk.accept (train_two)
+minsk.accept(train_one)
+minsk.accept(train_two)
 
 puts "After adding two trains #{minsk.trains}"
 
-minsk.departure (train_two)
+minsk.departure(train_two)
 
 puts "After deletion the train 2 #{minsk.trains}"
 
@@ -28,17 +28,17 @@ puts "Passenger type trains: #{ minsk.trains_types ('passenger')},
 
 #test route
 
-route.add_station (borisov)
-route.add_station (orsha)
+route.add_station(borisov)
+route.add_station(orsha)
 
 puts "Stations after adding two station : #{route.stations}"
 
-route.delete_station (borisov)
-route.delete_station (minsk)
+route.delete_station(borisov)
+route.delete_station(minsk)
 
 puts "Stations after deletion Borisov and Minsk: #{route.stations}"
 
-route.add_station (borisov)
+route.add_station(borisov)
 
 #test train
 
@@ -53,7 +53,7 @@ puts "After decrease speed on 120 (was 100): #{train_one.speed},
       Wagons after attempt unhooking (was 10): #{train_one.wagons}"
 
 
-train_one.route = (route)
+train_one.route = route
 route.stations.each do |station|
   puts station.title
 end
