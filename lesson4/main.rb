@@ -58,7 +58,7 @@ def station_menu
     when 3
       train_list_on_station
     when 4
-      main_menu
+      return
     else
       puts 'Enter the correct number.'
     end
@@ -100,7 +100,7 @@ end
 def train_list_on_station
   if @stations.empty?
     puts 'There are not stations.'
-    station_menu
+    return
   end
 
   choose_station
@@ -111,7 +111,6 @@ def train_list_on_station
     puts 'Train list on station: '
     @station.trains.each { |train| puts "(#{train.number}, #{train.type})" }
   end
-  station_menu
 end
 
 def choose_station
@@ -157,7 +156,7 @@ def train_menu
     when 3
       train_list
     when 4
-      main_menu
+      return
     else
       puts 'Enter the correct number.'
     end
@@ -221,11 +220,6 @@ def train_list
 end
 
 def choose_train
-  if @trains.empty?
-    puts "There aren't trains."
-    train_menu
-  end
-
   bool = true
 
   while bool
@@ -249,14 +243,20 @@ def choose_train
 end
 
 def selected_train
+  if @trains.empty?
+    puts "There aren't trains."
+    return
+  end
+
   choose_train
+
   loop do
     puts "
     ---------OPERATIONS---------
     1 - APPOINT TO ROUTE
     2 - FORWARD/BACKWARDS
     3 - ADD/DELETE WAGON
-    4 - BACK TO THE TRAIN MENU
+    4 - BACK
     "
     choice = gets.chomp.to_i
 
@@ -268,7 +268,7 @@ def selected_train
     when 3
       wagons
     when 4
-      train_menu
+      break
     else
       puts 'Enter correct number.'
     end
@@ -277,11 +277,11 @@ end
 
 def appoint_route
   unless route_train?
-    puts "A route is already appointed."
-    train_menu
+    puts 'A route is already appointed.'
+    return
   end
 
-  choose_route
+  return if choose_route
 
   @train.route=@route
   puts "You've appointed the route!"
@@ -290,14 +290,14 @@ end
 def forward_backwards
   if route_train?
     puts "Train havn't a route."
-    train_menu
+    return
   end
 
   loop do
     puts "
     1 - FORWARD
     2 - BACKWARDS
-    3 - BACK TO THE TRAIN MENU
+    3 - BACK
     "
     choice = gets.chomp.to_i
 
@@ -317,7 +317,7 @@ def forward_backwards
       arrived on the #{@train.current_station.title}.
       "
     when 3
-      train_menu
+      break
     else
       puts 'Enter correct number.'
     end
@@ -326,7 +326,6 @@ end
 
 def route_train?
   return true if @train.routes == []
-
   false
 end
 
@@ -335,7 +334,7 @@ def wagons
     puts "
     1 - ADD WAGON
     2 - DELETE WAGON
-    3 - BACK TO THE TRAIN MENU
+    3 - BACK
     "
     choice = gets.chomp.to_i
     case choice
@@ -356,7 +355,7 @@ def wagons
         puts 'Wagon deleted!'
       end
     when 3
-      train_menu
+      break
     else
       puts 'Enter correct number!'
     end
@@ -380,7 +379,7 @@ def route_menu
     when 2
       selected_route
     when 3
-      main_menu
+      break
     else
       puts 'Enter correct number.'
     end
@@ -390,7 +389,7 @@ end
 def create_route
   if @stations.empty?
     puts 'There are not stations to create a route.'
-    route_menu
+    return
   end
 
   puts 'First station:'
@@ -408,7 +407,7 @@ end
 def choose_route
   if @routes.empty?
     puts "There aren't routes."
-    route_menu
+    return true
   end
 
   bool = true
@@ -431,17 +430,18 @@ def choose_route
     @route = @routes[choice - 1]
     puts "You've chosen route: #{@route.title}!"
   end
+  false
 end
 
 def selected_route
-  choose_route
+  return if choose_route
   loop do
     puts "
     ----------OPERATIONS---------
     1 - ADD STATION
     2 - DELETE STATION
     3 - VIEW STATIONS
-    4 - BACK TO THE ROUTE MENU
+    4 - BACK
     "
     choice = gets.chomp.to_i
 
@@ -451,9 +451,9 @@ def selected_route
     when 2
       delete_station
     when 3
-      route_list
+      route_list_stations
     when 4
-      route_menu
+      break
     else
       puts 'Enter correct number!'
     end
@@ -463,7 +463,7 @@ end
 def add_station
   if @stations.empty?
     puts 'There are not stations.'
-    route_menu
+    return
   end
 
   choose_station
@@ -475,7 +475,7 @@ end
 def delete_station
   if @stations.empty?
     puts 'There are not stations'
-    route_menu
+    return
   end
 
   choose_station
@@ -484,10 +484,9 @@ def delete_station
   puts "You've deleted station!"
 end
 
-def route_list
+def route_list_stations
   puts 'Stations:'
   @route.stations.each { |station| puts station.title }
-  route_menu
 end
 
 main_menu
