@@ -283,7 +283,7 @@ def appoint_route
 
   return if choose_route
 
-  @train.route=@route
+  @train.route = @route
   puts "You've appointed the route!"
 end
 
@@ -326,6 +326,7 @@ end
 
 def route_train?
   return true if @train.routes == []
+
   false
 end
 
@@ -435,6 +436,7 @@ end
 
 def selected_route
   return if choose_route
+
   loop do
     puts "
     ----------OPERATIONS---------
