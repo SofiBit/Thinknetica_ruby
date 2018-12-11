@@ -30,7 +30,7 @@ def main_menu
     when 3
       route_menu
     when 4
-      exit
+      break
     else
       puts 'Enter the correct number.'
     end

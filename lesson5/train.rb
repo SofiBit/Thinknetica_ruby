@@ -6,10 +6,13 @@ class Train
   include InstanceCounter
   attr_accessor :speed
   attr_reader :wagons, :route, :type, :number, :routes
-  @@trains = []
+  @@trains = {}
 
   def self.find(number)
-    @@trains.find { |train| train.number == number }
+    @@trains.each do |number_train, object_train|
+      return object_train if number_train == number
+    end
+    nil
   end
 
   def initialize(number, type)
@@ -18,7 +21,7 @@ class Train
     @speed = 0
     @wagons = []
     @routes = []
-    @@trains << self
+    @@trains[self.number] = self
     register_instance
   end
 
