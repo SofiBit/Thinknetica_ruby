@@ -9,10 +9,7 @@ class Train
   @@trains = {}
 
   def self.find(number)
-    @@trains.each do |number_train, object_train|
-      return object_train if number_train == number
-    end
-    nil
+    @@trains[number]
   end
 
   def initialize(number, type)
