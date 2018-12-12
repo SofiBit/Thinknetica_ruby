@@ -2,7 +2,11 @@ require_relative 'modules/instance_counter'
 
 class Station
   include InstanceCounter
-  attr_reader :trains, :title
+
+  attr_accessor :title
+  attr_reader :trains
+
+  FORMAT_TITLE = /^[A-Z]{1}[a-z]+$/.freeze
 
   @@stations = []
 
@@ -13,6 +17,7 @@ class Station
   def initialize(title)
     @title = title
     @trains = []
+    validate!
     @@stations << self
     register_instance
   end
@@ -27,5 +32,18 @@ class Station
 
   def trains_types(type)
     @trains.select { |train| train.type == type }
+  end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
+  private
+
+  def validate!
+    raise "Title must be like 'Minsk'" if title !~ FORMAT_TITLE
   end
 end

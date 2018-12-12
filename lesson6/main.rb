@@ -72,13 +72,17 @@ def create_station
     puts 'Enter a station name.'
     title = gets.chomp.to_s
 
-    if station_in_stations?(title) || title.empty?
-      puts "The name isn't suitable."
-    else
-      @stations.push(Station.new(title))
-      puts "You've created a new station!"
+    if station_in_stations?(title)
+      puts 'Such station already exists.'
+      break
+    end
 
+    begin
+      @stations.push(Station.new(title))
+      puts "You've created the new station: #{title}"
       bool = false
+    rescue
+      puts 'Error. Enter suitable name station.'
     end
   end
 end
@@ -167,48 +171,30 @@ def create_train
   bool = true
 
   while bool
-    puts 'Enter train number.'
-    number_train = gets.chomp.to_i
+    puts 'Enter a train number. Format: XXX(-/ )XX'
+    number = gets.chomp.to_s
 
-    if number_train.zero?
-      puts 'Enter correct number.'
-    else
-      bool = false
+    puts "Enter a train type: 'cargo' or 'passenger'."
+    type = gets.chomp.to_sym
+
+    if train_in_trains?(number, type)
+      puts 'Error. Such train already exists.'
+      break
     end
-  end
 
-  bool = true
-
-  while bool
-    puts "Enter type of train:
-    1 - Passenger
-    2 - Cargo
-    "
-    choice = gets.chomp.to_i
-
-    case choice
-    when 1
-      type_train = :passenger
+    begin
+      @trains.push(Train.new(number, type))
+      puts "You've created the new train: (#{number}, #{type})"
       bool = false
-    when 2
-      type_train = :cargo
-      bool = false
-    else
-      puts 'Enter correct number.'
+    rescue
+      puts 'Error. Enter valid data.'
     end
-  end
-
-  if train_in_trains?(number_train, type_train)
-    puts 'Such train already exists'
-  else
-    puts "You've created a new train!"
-    @trains.push(Train.new(number_train, type_train))
   end
 end
 
-def train_in_trains?(number_train, type_train)
+def train_in_trains?(number, type)
   @trains.each do |train|
-    return true if train.number == number_train && train.type == type_train
+    return true if train.number == number && train.type == type
   end
   false
 end

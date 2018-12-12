@@ -4,20 +4,23 @@ require_relative 'modules/instance_counter'
 class Train
   include Manufacturer
   include InstanceCounter
-  attr_accessor :speed
-  attr_reader :wagons, :route, :type, :number, :routes
+  attr_accessor :speed, :type, :number
+  attr_reader :wagons, :route, :routes
   @@trains = {}
 
   def self.find(number)
     @@trains[number]
   end
 
+  NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i.freeze
+
   def initialize(number, type)
-    @number = number
+    @number = number.to_s
     @type = type.to_sym
     @speed = 0
     @wagons = []
     @routes = []
+    validate!
     @@trains[self.number] = self
     register_instance
   end
@@ -81,5 +84,21 @@ class Train
 
   def current_station
     @route.stations[@index_station]
+  end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
+  protected
+
+  def validate!
+    raise 'Number must be XXX(-/ )XX' if number !~ NUMBER_FORMAT
+    unless %i[passenger cargo].include?(type)
+      raise "Type must be 'passenger' or 'cargo'"
+    end
   end
 end
