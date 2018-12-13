@@ -5,13 +5,11 @@ class Route
   attr_accessor :start, :finish
   attr_reader :stations, :title
 
-  FORMAT_TITLE = /^[A-Z]{1}[a-z]+$/.freeze
-
   def initialize(start, finish)
     @stations = [start, finish]
+    validate!
     @title = "(#{start.title} - #{finish.title})"
     register_instance
-    validate!
   end
 
   def add_station(station)
@@ -34,7 +32,10 @@ class Route
   private
 
   def validate!
-    raise "Start must be like 'Minsk'." if start !~ FORMAT_TITLE
-    raise "Finish must be like 'Minsk'." if finish !~ FORMAT_TITLE
+    @stations.each do |station|
+      unless station.instance_of?(Station)
+        raise "Object doesn't belong to the class Station."
+      end
+    end
   end
 end
