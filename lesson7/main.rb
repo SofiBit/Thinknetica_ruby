@@ -110,10 +110,12 @@ def train_list_on_station
   choose_station
 
   if @station.trains.empty?
-    puts 'Train list is empty'
+    puts 'Train list is empty.'
   else
-    puts 'Train list on station: '
-    @station.trains.each { |train| puts "(#{train.number}, #{train.type})" }
+    puts 'Train list on station (number, type, quantity of wagons): '
+    @station.each_train do |train|
+      puts "#{train.number}, #{train.type}, #{train.wagons.size}."
+    end
   end
 end
 
@@ -241,7 +243,7 @@ def selected_train
     ---------OPERATIONS---------
     1 - APPOINT TO ROUTE
     2 - FORWARD/BACKWARDS
-    3 - ADD/DELETE WAGON
+    3 - WAGON MENU
     4 - BACK
     "
     choice = gets.chomp.to_i
@@ -252,7 +254,7 @@ def selected_train
     when 2
       forward_backwards
     when 3
-      wagons
+      wagon_menu
     when 4
       break
     else
@@ -316,38 +318,137 @@ def route_train?
   false
 end
 
-def wagons
+def wagon_menu
   loop do
     puts "
+    ---------WAGON MENU--------
     1 - ADD WAGON
     2 - DELETE WAGON
-    3 - BACK
+    3 - VIEW WAGON LIST OF TRAIN
+    4 - TAKE THE SEAT / TAKE UP THE VOLUME
+    5 - BACK
     "
+
     choice = gets.chomp.to_i
+
     case choice
-    when 1
-      if @train.type == :passenger
-        @train.hook(PassengerWagon.new)
-        puts 'Wagon added!'
-      elsif @train.type == :cargo
-        @train.hook(CargoWagon.new)
-        puts 'Wagon added!'
-      end
-    when 2
-      if @train.type == :passenger
-        @train.unhook(PassengerWagon.new)
-        puts 'Wagon deleted!'
-      elsif @train.type == :cargo
-        @train.unhook(CargoWagon.new)
-        puts 'Wagon deleted!'
-      end
-    when 3
-      break
+    when 1 then add_wagon
+    when 2 then delete_wagon
+    when 3 then list_wagon
+    when 4 then choice_occupy
+    when 5 then break
     else
-      puts 'Enter correct number!'
+      puts 'Enter correct number.'
     end
   end
 end
+
+def add_wagon
+  if @train.type == :passenger
+    puts 'Enter quantity seats in wagon.'
+    seats = gets.chomp.to_i
+
+    @train.hook(PassengerWagon.new(seats))
+    puts "You've added the new wagon: ('passenger', seats - #{seats})!"
+  else
+    puts 'Enter volume of wagon.'
+    volume = gets.chomp.to_i
+
+    @train.hook(CargoWagon.new(volume))
+    puts "You've added the new wagon: ('cargo', volume - #{volume})!"
+  end
+end
+
+def delete_wagon
+  if @train.wagons.empty?
+    puts "Train havn't a wagons."
+    return
+  end
+
+  puts 'Select a wagon for deletion.'
+
+  choose_wagon
+
+  @train.unhook(@wagon)
+  puts "You've deleted the wagon."
+end
+
+def choose_wagon
+  bool = true
+
+  while bool
+    list_wagon
+
+    puts 'Enter a number of wagon.'
+    choice = gets.chomp.to_i
+
+    if choice <= @train.wagons.size && choice > 0
+      @wagon = @train.wagons[choice - 1]
+      bool = false
+    else
+      puts 'Enter a correct number.'
+    end
+  end
+end
+
+def list_wagon
+  if @train.wagons.empty?
+    puts "Train havn't a wagons."
+    return
+  end
+
+  if @train.type == :cargo
+    @train.each_wagon do |wagon|
+      print "Number #{wagon.number}, "
+      print "type #{wagon.type}, "
+      print "free volume #{wagon.free}, "
+      print "occupied volume #{wagon.occupied}.\n"
+    end
+  else
+    @train.each_wagon do |wagon|
+      print "Number #{wagon.number}, "
+      print "type #{wagon.type}, "
+      print "free seats #{wagon.free}, "
+      print "occupied seats #{wagon.occupied}.\n"
+    end
+  end
+end
+
+def choice_occupy
+  return if @train.wagons.empty?
+
+  puts 'Select a wagon.'
+
+  choose_wagon
+
+  if @wagon.type == :cargo
+    occupy_cargo
+  else
+    occupy_passenger
+  end
+end
+
+def occupy_cargo
+  puts "Enter quantity volume wich you'd like to occupy.Free volume:#{@wagon.free}."
+  quantity = gets.chomp.to_i
+
+  if @wagon.free < quantity
+    puts "You can't to occupy such the volume."
+  else
+    @wagon.to_occupy(quantity)
+    puts "Free volume left: #{@wagon.free}."
+  end
+end
+
+def occupy_passenger
+  if @wagon.free > 0
+    @wagon.to_occupy
+    puts "You've took the seat! Free seats: #{@wagon.free}"
+  else
+    puts "You can't to take the seat. There isn't a free seats."
+  end
+end
+
 
 # --------ROUTE--------
 def route_menu

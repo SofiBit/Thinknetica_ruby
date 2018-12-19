@@ -2,7 +2,7 @@ require_relative 'modules/manufacturer'
 
 class Wagon
   include Manufacturer
-  attr_accessor :type
+  attr_accessor :type, :number
 
   def initialize(type)
     @type = type.to_sym

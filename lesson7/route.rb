@@ -32,7 +32,7 @@ class Route
   private
 
   def validate!
-    unless @stations.all?{|station| station.is_a?(Station)}
+    unless @stations.all?{ |station| station.is_a?(Station) }
       raise "Object doesn't belong to the class Station."
     end
   end

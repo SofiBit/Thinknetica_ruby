@@ -43,10 +43,12 @@ class Train
 
   def hook(wagon)
     @wagons << wagon if speed.zero? && wagon.type == type
+    @wagons.each_with_index { |wagon_i, index| wagon_i.number = index + 1 }
   end
 
   def unhook(wagon)
     @wagons.delete(wagon) if speed.zero? && @wagons.include?(wagon)
+    @wagons.each_with_index { |wagon_i, index| wagon_i.number = index + 1 }
   end
 
   def route=(route)
@@ -91,6 +93,10 @@ class Train
     true
   rescue
     false
+  end
+
+  def each_wagon
+    @wagons.each { |wagon| yield(wagon) }
   end
 
   protected
