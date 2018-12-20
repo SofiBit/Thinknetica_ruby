@@ -17,23 +17,23 @@ class Route
   end
 
   def delete_station(station)
-    if station != @stations.first && station != @stations.last
-      @stations.delete(station)
-    end
+    return unless station != @stations.first && station != @stations.last
+
+    @stations.delete(station)
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
   private
 
   def validate!
-    unless @stations.all?{ |station| station.is_a?(Station) }
-      raise "Object doesn't belong to the class Station."
-    end
+    return if @stations.all? { |station| station.is_a?(Station) }
+
+    raise "Object doesn't belong to the class Station."
   end
 end

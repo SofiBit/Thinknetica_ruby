@@ -12,15 +12,15 @@ class Wagon
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
   protected
 
   def validate!
-    unless %i[passenger cargo].include?(type)
-      raise "Type must be 'passenger' or 'cargo'"
-    end
+    return if %i[passenger cargo].include?(type)
+
+    raise "Type must be 'passenger' or 'cargo'"
   end
 end

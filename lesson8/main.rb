@@ -21,19 +21,19 @@ def main_menu
     4 - LEAVE THE MENU
     "
     choice = gets.chomp.to_i
+    break if choice == 4
 
-    case choice
-    when 1
-      station_menu
-    when 2
-      train_menu
-    when 3
-      route_menu
-    when 4
-      break
-    else
-      puts 'Enter the correct number.'
-    end
+    case_main_menu(choice)
+  end
+end
+
+def case_main_menu(choice)
+  case choice
+  when 1 then station_menu
+  when 2 then train_menu
+  when 3 then route_menu
+  else
+    puts 'Enter the correct number.'
   end
 end
 
@@ -48,27 +48,24 @@ def station_menu
     4 - BACK TO THE MAIN MENU
     "
     choice = gets.chomp.to_i
+    break if choice == 4
 
-    case choice
+    case_station_menu(choice)
+  end
+end
 
-    when 1
-      create_station
-    when 2
-      station_list
-    when 3
-      train_list_on_station
-    when 4
-      return
-    else
-      puts 'Enter the correct number.'
-    end
+def case_station_menu(choice)
+  case choice
+  when 1 then create_station
+  when 2 then station_list
+  when 3 then train_list_on_station
+  else
+    puts 'Enter the correct number.'
   end
 end
 
 def create_station
-  bool = true
-
-  while bool
+  loop do
     puts 'Enter a station name.'
     title = gets.chomp.to_s
 
@@ -80,8 +77,8 @@ def create_station
     begin
       @stations.push(Station.new(title))
       puts "You've created the new station: #{title}"
-      bool = false
-    rescue
+      break
+    rescue StandardError
       puts 'Error. Enter suitable name station.'
     end
   end
@@ -151,57 +148,63 @@ def train_menu
       3 - TRAIN LIST
       4 - BACK TO THE MAIN MENU
     "
-
     choice = gets.chomp.to_i
+    break if choice == 4
 
-    case choice
-    when 1
-      create_train
-    when 2
-      selected_train
-    when 3
-      train_list
-    when 4
-      return
-    else
-      puts 'Enter the correct number.'
-    end
+    case_train_menu(choice)
+  end
+end
+
+def case_train_menu(choice)
+  case choice
+  when 1 then create_train
+  when 2 then selected_train
+  when 3 then train_list
+  else
+    puts 'Enter the correct number.'
   end
 end
 
 def create_train
-  bool = true
+  loop do
+    enter_train_number
+    enter_train_type
 
-  while bool
-    puts 'Enter a train number. Format: XXX(-/ )XX'
-    number = gets.chomp.to_s
-
-    puts "Enter a train type: 'cargo' or 'passenger'."
-    type = gets.chomp.to_sym
-
-    if train_in_trains?(number, type)
+    if train_in_trains?
       puts 'Error. Such train already exists.'
       break
     end
 
     begin
-      @trains.push(Train.new(number, type))
-      puts "You've created the new train: (#{number}, #{type})"
-      bool = false
-    rescue
+      @trains.push(Train.new(@number, @type))
+      puts "You've created the new train: (#{@number}, #{@type})"
+      break
+    rescue StandardError
       puts 'Error. Enter valid data.'
     end
   end
 end
 
-def train_in_trains?(number, type)
+def enter_train_number
+  puts 'Enter a train number. Format: XXX(-/ )XX'
+  @number = gets.chomp.to_s
+end
+
+def enter_train_type
+  puts "Enter a train type: 'cargo' or 'passenger'."
+  @type = gets.chomp.to_sym
+end
+
+def train_in_trains?
   @trains.each do |train|
-    return true if train.number == number && train.type == type
+    return true if train.number == @number && train.type == @type
   end
   false
 end
 
 def train_list
+  return if trains_empty_print || trains_empty?
+
   @trains.each do |train|
     puts "Train: (#{train.number}, #{train.type})"
   end
@@ -231,10 +234,7 @@ def choose_train
 end
 
 def selected_train
-  if @trains.empty?
-    puts "There aren't trains."
-    return
-  end
+  return if trains_empty_print || trains_empty?
 
   choose_train
 
@@ -247,20 +247,30 @@ def selected_train
     4 - BACK
     "
     choice = gets.chomp.to_i
+    break if choice == 4
 
-    case choice
-    when 1
-      appoint_route
-    when 2
-      forward_backwards
-    when 3
-      wagon_menu
-    when 4
-      break
-    else
-      puts 'Enter correct number.'
-    end
+    case_operations_train(choice)
   end
+end
+
+def case_operations_train(choice)
+  case choice
+  when 1 then appoint_route
+  when 2 then forward_backwards
+  when 3 then wagon_menu
+  else
+    puts 'Enter correct number.'
+  end
+end
+
+def trains_empty?
+  return true if @trains.empty?
+
+  false
+end
+
+def trains_empty_print
+  puts 'There are not a trains.' if trains_empty?
 end
 
 def appoint_route
@@ -269,7 +279,12 @@ def appoint_route
     return
   end
 
-  return if choose_route
+  if @routes.empty?
+    puts "There aren't a routes."
+    return
+  end
+
+  choose_route
 
   @train.route = @route
   puts "You've appointed the route!"
@@ -288,27 +303,27 @@ def forward_backwards
     3 - BACK
     "
     choice = gets.chomp.to_i
+    break if choice == 3
 
-    case choice
-    when 1
-      @train.forward
+    case_f_b(choice)
+  end
+end
 
-      puts "
-      The train left the #{@train.previous_station.title},
-      arrived on the #{@train.current_station.title}.
-      "
-    when 2
-      @train.backwards
+def case_f_b(choice)
+  case choice
+  when 1
+    @train.forward
 
-      puts "
-      The train left the #{@train.next_station.title},
-      arrived on the #{@train.current_station.title}.
-      "
-    when 3
-      break
-    else
-      puts 'Enter correct number.'
-    end
+    print "The train left the #{@train.previous_station.title} and "
+    print "arrived on the #{@train.current_station.title}.\n"
+
+  when 2
+    @train.backwards
+
+    print "The train left the '#{@train.next_station.title}' and "
+    print "arrived on the '#{@train.current_station.title}'.\n"
+  else
+    puts 'Enter correct number.'
   end
 end
 
@@ -330,16 +345,20 @@ def wagon_menu
     "
 
     choice = gets.chomp.to_i
+    break if choice == 5
 
-    case choice
-    when 1 then add_wagon
-    when 2 then delete_wagon
-    when 3 then list_wagon
-    when 4 then choice_occupy
-    when 5 then break
-    else
-      puts 'Enter correct number.'
-    end
+    case_wagon_menu(choice)
+  end
+end
+
+def case_wagon_menu(choice)
+  case choice
+  when 1 then add_wagon
+  when 2 then delete_wagon
+  when 3 then list_wagon
+  when 4 then choice_occupy
+  else
+    puts 'Enter correct number.'
   end
 end
 
@@ -398,19 +417,27 @@ def list_wagon
   end
 
   if @train.type == :cargo
-    @train.each_wagon do |wagon|
-      print "Number #{wagon.number}, "
-      print "type #{wagon.type}, "
-      print "free volume #{wagon.free}, "
-      print "occupied volume #{wagon.occupied}.\n"
-    end
+    train_type_cargo
   else
-    @train.each_wagon do |wagon|
-      print "Number #{wagon.number}, "
-      print "type #{wagon.type}, "
-      print "free seats #{wagon.free}, "
-      print "occupied seats #{wagon.occupied}.\n"
-    end
+    train_type_passenger
+  end
+end
+
+def train_type_cargo
+  @train.each_wagon do |wagon|
+    print "Number #{wagon.number}, "
+    print "type #{wagon.type}, "
+    print "free volume #{wagon.free}, "
+    print "occupied volume #{wagon.occupied}.\n"
+  end
+end
+
+def train_type_passenger
+  @train.each_wagon do |wagon|
+    print "Number #{wagon.number}, "
+    print "type #{wagon.type}, "
+    print "free seats #{wagon.free}, "
+    print "occupied seats #{wagon.occupied}.\n"
   end
 end
 
@@ -429,7 +456,7 @@ def choice_occupy
 end
 
 def occupy_cargo
-  puts "Enter quantity volume wich you'd like to occupy.Free volume:#{@wagon.free}."
+  puts "Enter quantity volume.Free volume:#{@wagon.free}."
   quantity = gets.chomp.to_i
 
   if @wagon.free < quantity
@@ -449,7 +476,6 @@ def occupy_passenger
   end
 end
 
-
 # --------ROUTE--------
 def route_menu
   loop do
@@ -461,16 +487,18 @@ def route_menu
     "
     choice = gets.chomp.to_i
 
-    case choice
-    when 1
-      create_route
-    when 2
-      selected_route
-    when 3
-      break
-    else
-      puts 'Enter correct number.'
-    end
+    break if choice == 3
+
+    case_route_menu(choice)
+  end
+end
+
+def case_route_menu(choice)
+  case choice
+  when 1 then create_route
+  when 2 then selected_route
+  else
+    puts 'Enter a correct number.'
   end
 end
 
@@ -493,11 +521,6 @@ def create_route
 end
 
 def choose_route
-  if @routes.empty?
-    puts "There aren't routes."
-    return true
-  end
-
   bool = true
 
   while bool
@@ -518,11 +541,13 @@ def choose_route
     @route = @routes[choice - 1]
     puts "You've chosen route: #{@route.title}!"
   end
-  false
 end
 
 def selected_route
-  return if choose_route
+  if @routes.empty?
+    puts "There aren't a routes."
+    return
+  end
 
   loop do
     puts "
@@ -534,18 +559,19 @@ def selected_route
     "
     choice = gets.chomp.to_i
 
-    case choice
-    when 1
-      add_station
-    when 2
-      delete_station
-    when 3
-      route_list_stations
-    when 4
-      break
-    else
-      puts 'Enter correct number!'
-    end
+    break if choice == 4
+
+    case_operations_route(choice)
+  end
+end
+
+def case_operations_route(choice)
+  case choice
+  when 1 then add_station
+  when 2 then delete_station
+  when 3 then route_list_stations
+  else
+    puts 'Enter correct number!'
   end
 end
 

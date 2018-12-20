@@ -10,9 +10,9 @@ class CargoWagon < Wagon
   end
 
   def to_occupy(quantity)
-    if @free >= quantity
-      @free -= quantity.to_i
-      @occupied += quantity.to_i
-    end
+    return unless @free >= quantity
+
+    @free -= quantity.to_i
+    @occupied += quantity.to_i
   end
 end

@@ -59,25 +59,25 @@ class Train
   end
 
   def forward
-    if next_station
-      current_station.departure(self)
-      @index_station += 1
-      current_station.accept(self)
-    end
+    return unless next_station
+
+    current_station.departure(self)
+    @index_station += 1
+    current_station.accept(self)
   end
 
   def backwards
-    if previous_station
-      current_station.departure(self)
-      @index_station -= 1
-      current_station.accept(self)
-    end
+    return unless previous_station
+
+    current_station.departure(self)
+    @index_station -= 1
+    current_station.accept(self)
   end
 
   def next_station
-    unless @index_station + 1 == @route.stations.count
-      @route.stations[@index_station + 1]
-    end
+    return if @index_station + 1 == @route.stations.count
+
+    @route.stations[@index_station + 1]
   end
 
   def previous_station
@@ -91,7 +91,7 @@ class Train
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
@@ -103,8 +103,8 @@ class Train
 
   def validate!
     raise 'Number must be XXX(-/ )XX' if number !~ NUMBER_FORMAT
-    unless %i[passenger cargo].include?(type)
-      raise "Type must be 'passenger' or 'cargo'"
-    end
+    return if %i[passenger cargo].include?(type)
+
+    raise "Type must be 'passenger' or 'cargo'"
   end
 end

@@ -10,9 +10,9 @@ class PassengerWagon < Wagon
   end
 
   def to_occupy
-    if @free > 0
-      @free -= 1
-      @occupied += 1
-    end
+    return unless @free > 0
+
+    @free -= 1
+    @occupied += 1
   end
 end
