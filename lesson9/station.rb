@@ -1,12 +1,15 @@
 require_relative 'modules/instance_counter'
+require_relative 'modules/validation'
 
 class Station
   include InstanceCounter
+  include Validation
+
+  validate :title, :type, String
+  validate :title, :format, /^[A-Z]{1}[a-z]+$/
 
   attr_accessor :title
   attr_reader :trains
-
-  FORMAT_TITLE = /^[A-Z]{1}[a-z]+$/.freeze
 
   @@stations = []
 
@@ -34,20 +37,7 @@ class Station
     @trains.select { |train| train.type == type }
   end
 
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
-  end
-
   def each_train
     @trains.each { |train| yield(train) }
-  end
-
-  private
-
-  def validate!
-    raise "Title must be like 'Minsk'" if title !~ FORMAT_TITLE
   end
 end

@@ -1,0 +1,16 @@
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 16
+
+Style/ClassVars:
+  Exclude:
+    - 'station.rb'
+    - 'train.rb'
+
+Metrics/AbcSize:
+  Max: 18
+
+Metrics/LineLength:
+  Max: 82

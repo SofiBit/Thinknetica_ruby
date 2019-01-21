@@ -1,9 +1,16 @@
 require_relative 'modules/manufacturer'
 require_relative 'modules/instance_counter'
+require_relative 'modules/validation'
 
 class Train
   include Manufacturer
   include InstanceCounter
+  include Validation
+
+  NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i.freeze
+  
+  validate :number, :format, NUMBER_FORMAT
+
   attr_accessor :speed, :type, :number
   attr_reader :wagons, :route, :routes
   @@trains = {}
@@ -11,8 +18,6 @@ class Train
   def self.find(number)
     @@trains[number]
   end
-
-  NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i.freeze
 
   def initialize(number, type)
     @number = number.to_s
@@ -102,7 +107,6 @@ class Train
   protected
 
   def validate!
-    raise 'Number must be XXX(-/ )XX' if number !~ NUMBER_FORMAT
     return if %i[passenger cargo].include?(type)
 
     raise "Type must be 'passenger' or 'cargo'"
