@@ -10,10 +10,6 @@ module Validation
     end
 
     def validate(name, type_valid, param = nil)
-      unless %i[prensence format type].include?(type_valid)
-        raise 'Invalid validation type'
-      end
-
       validate_data << { name: name, type_valid: type_valid, param: param }
     end
   end
@@ -28,19 +24,19 @@ module Validation
       end
     end
 
-    def prensence(name, _param)
+    def validate_presence(name, _param)
       return unless name.nil || name.to_s.empty?
 
       raise "Value of variable mustn't be 'nil' or empty!"
     end
 
-    def format(name, format_param)
+    def validate_format(name, format_param)
       return unless name !~ format_param
 
       raise "Value of variable must be of such format '#{format_param}'!"
     end
 
-    def type(name, type_param)
+    def validate_type(name, type_param)
       return if name.class == type_param
 
       raise "Value of variable must be '#{type_param}'!"
