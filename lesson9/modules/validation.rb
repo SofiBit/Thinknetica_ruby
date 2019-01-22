@@ -20,7 +20,7 @@ module Validation
         name = value[:name]
         name_value = instance_variable_get("@#{name}".to_sym)
 
-        send("#{value[:type_valid]}", name_value, value[:param])
+        send("validate_#{value[:type_valid]}", name_value, value[:param])
       end
     end
 
